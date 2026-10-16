@@ -1,6 +1,6 @@
 import Testing
 
-@testable import StringTransformation
+@testable import StringTransformations
 
 @Suite
 struct SnakeCaseTransformerTests {
@@ -47,9 +47,14 @@ struct SnakeCaseTransformerTests {
     }
 
     @Test func extra() async throws {
-        // From Foundation/JSONEncoderTests.swift
         let toSnakeCaseTests = [
-            ("LeadingCaps", "leading_caps")  // leading caps
+            ("LeadingCaps", "leading_caps"),  // leading caps, from Foundation/JSONEncoderTests.swift
+            ("familyPhoto.png", "family_photo_png"),  // periods split words, including file extensions
+            ("vector3D", "vector3_d"),  // digits stay with the word before them
+            ("utf8String", "utf8_string"),
+            ("x½Y", "x½_y"),  // only letters have case, as in Foundation
+            ("🐧Fish", "🐧_fish"),
+            ("MY_URL", "my_url"),  // no assumed input case; Foundation assumes a lowercase first letter: "m_y_url"
         ]
 
         let transformer = SnakeCaseTransformer()

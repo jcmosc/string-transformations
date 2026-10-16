@@ -3,23 +3,23 @@
 import PackageDescription
 
 let package = Package(
-    name: "string-transformation",
+    name: "string-transformations",
     products: [
         .library(
-            name: "string-transformation",
-            targets: ["StringTransformation"]
+            name: "StringTransformations",
+            targets: ["StringTransformations"]
         )
     ],
     targets: [
         .target(
-            name: "StringTransformation",
+            name: "StringTransformations",
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency")
             ],
         ),
         .testTarget(
-            name: "StringTransformationTests",
-            dependencies: ["StringTransformation"],
+            name: "StringTransformationsTests",
+            dependencies: ["StringTransformations"],
             swiftSettings: [
                 .enableUpcomingFeature("ApproachableConcurrency")
             ],
