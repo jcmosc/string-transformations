@@ -24,6 +24,17 @@ struct WordSplittingStrategyTests {
         #expect(SnakeCaseTransformer(wordSplittingStrategy: .convertFromDotCase).transform("my_file.name") == "my_file_name")
     }
 
+    @Test func spaceSeparatedSourceCases() async throws {
+        // Case changes within words are not split.
+        #expect(SnakeCaseTransformer().transform("John McCarthy") == "john_mc_carthy")
+        #expect(SnakeCaseTransformer(wordSplittingStrategy: .convertFromTitleCase).transform("John McCarthy") == "john_mccarthy")
+        #expect(CamelCaseTransformer(wordSplittingStrategy: .convertFromSentenceCase).transform("Request ID number") == "requestIdNumber")
+
+        // Separators of other cases are part of the word, and any whitespace separates words.
+        #expect(KebabCaseTransformer(wordSplittingStrategy: .convertFromTitleCase).transform("my_var\tName") == "my_var-name")
+        #expect(SnakeCaseTransformer(wordSplittingStrategy: .convertFromSentenceCase).transform(" Leading space") == " leading_space")
+    }
+
     @Test func caseChangeSourceCases() async throws {
         // Separators are part of the word.
         #expect(SnakeCaseTransformer(wordSplittingStrategy: .convertFromCamelCase).transform("my_varName") == "my_var_name")

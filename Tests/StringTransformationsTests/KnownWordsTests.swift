@@ -41,6 +41,11 @@ struct KnownWordsTests {
         #expect(PascalCaseTransformer(knownWords: knownWords).transform("url_session") == "URLSession")
         #expect(PascalCaseTransformer(knownWords: knownWords).transform("ios_version") == "iOSVersion")
         #expect(TrainCaseTransformer(knownWords: knownWords).transform("x-request-id") == "X-Request-ID")
+        #expect(TitleCaseTransformer(knownWords: knownWords).transform("x_request_id") == "X Request ID")
+        // Sentence case uses the spelling for every word, not only capitalized ones.
+        #expect(SentenceCaseTransformer(knownWords: knownWords).transform("user_id") == "User ID")
+        #expect(SentenceCaseTransformer(knownWords: knownWords).transform("id_number") == "ID number")
+        #expect(SentenceCaseTransformer(knownWords: knownWords).transform("ios_version") == "iOS version")
         // Cases that don't capitalize words ignore the spelling.
         #expect(ConstantCaseTransformer(knownWords: knownWords).transform("iOSVersion") == "IOS_VERSION")
         #expect(KebabCaseTransformer(knownWords: knownWords).transform("userIDs") == "user-ids")

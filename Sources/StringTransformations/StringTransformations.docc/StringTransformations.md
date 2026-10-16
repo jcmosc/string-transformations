@@ -1,6 +1,6 @@
 # ``StringTransformations``
 
-Convert strings between camel case, snake case, kebab case and other naming conventions.
+Convert strings between camel case, snake case, Title case and other naming conventions.
 
 ## Overview
 
@@ -15,6 +15,7 @@ import StringTransformations
 "XMLHttpRequest".snakeCased()       // "xml_http_request"
 "content_type".trainCased()         // "Content-Type"
 "maxRetryCount".constantCased()     // "MAX_RETRY_COUNT"
+"maxRetryCount".sentenceCased()     // "Max retry count"
 ```
 
 Each case is a transformer: a small value that conforms to ``StringTransformer``. Pass a
@@ -37,6 +38,8 @@ key.transform(using: .snakeCase)    // key == "my_url"
 | kebab-case | ``KebabCaseTransformer`` | `user-id` |
 | Train-Case | ``TrainCaseTransformer`` | `User-Id` |
 | dot.case | ``DotCaseTransformer`` | `user.id` |
+| Title Case | ``TitleCaseTransformer`` | `User Id` |
+| Sentence case | ``SentenceCaseTransformer`` | `User id` |
 
 ### Any input, no guessing
 
@@ -131,6 +134,8 @@ cases by conforming to ``StringTransformer``. For more information, see
 - ``KebabCaseTransformer``
 - ``TrainCaseTransformer``
 - ``DotCaseTransformer``
+- ``TitleCaseTransformer``
+- ``SentenceCaseTransformer``
 
 ### Splitting Strings into Words
 

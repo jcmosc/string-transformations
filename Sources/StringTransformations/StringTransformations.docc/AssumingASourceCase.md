@@ -8,10 +8,11 @@ By default, transformers make no assumption about the case of their input, and s
 every separator and change of case. That's the right choice when input can be in any case, but
 when you know the case of your input, the default can split words that should stay whole.
 
-For example, a name in kebab case can contain capitals that aren't word boundaries:
+For example, a name can contain capitals that aren't word boundaries:
 
 ```swift
 "John-McCarthy".snakeCased()        // "john_mc_carthy"
+"John McCarthy".snakeCased()        // "john_mc_carthy"
 ```
 
 Set a transformer's `wordSplittingStrategy` to the case of your input, and it splits only where
@@ -20,6 +21,10 @@ that case separates words:
 ```swift
 let transformer = SnakeCaseTransformer(wordSplittingStrategy: .convertFromKebabCase)
 transformer.transform("John-McCarthy")      // "john_mccarthy"
+
+"John McCarthy".transformed(
+    using: .snakeCase(wordSplittingStrategy: .convertFromTitleCase)
+)                                           // "john_mccarthy"
 ```
 
 You can also pass a strategy to a static accessor:
@@ -39,6 +44,7 @@ You can also pass a strategy to a static accessor:
 | ``WordSplittingStrategy/convertFromSnakeCase``, ``WordSplittingStrategy/convertFromConstantCase`` | Underscores |
 | ``WordSplittingStrategy/convertFromKebabCase``, ``WordSplittingStrategy/convertFromTrainCase`` | Hyphens |
 | ``WordSplittingStrategy/convertFromDotCase`` | Periods |
+| ``WordSplittingStrategy/convertFromTitleCase``, ``WordSplittingStrategy/convertFromSentenceCase`` | Whitespace |
 | ``WordSplittingStrategy/convertFromCamelCase``, ``WordSplittingStrategy/convertFromPascalCase`` | Changes of case |
 
 Strategies that split at separators don't split at changes of case. The strategies for camel case

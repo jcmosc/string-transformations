@@ -34,6 +34,12 @@ public enum WordSplittingStrategy: Codable, Hashable, Sendable {
 
     /// Assumes strings are in Pascal case, and splits them only at case changes.
     case convertFromPascalCase
+
+    /// Assumes strings are in Title case, and splits them only at whitespace.
+    case convertFromTitleCase
+
+    /// Assumes strings are in Sentence case, and splits them only at whitespace.
+    case convertFromSentenceCase
 }
 
 extension WordSplittingStrategy {
@@ -48,6 +54,8 @@ extension WordSplittingStrategy {
             character == "-"
         case .convertFromDotCase:
             character == "."
+        case .convertFromTitleCase, .convertFromSentenceCase:
+            character.isWhitespace
         case .convertFromCamelCase, .convertFromPascalCase:
             false
         }
@@ -59,7 +67,7 @@ extension WordSplittingStrategy {
         case .useDefaultBoundaries, .convertFromCamelCase, .convertFromPascalCase:
             true
         case .convertFromSnakeCase, .convertFromConstantCase, .convertFromKebabCase,
-            .convertFromTrainCase, .convertFromDotCase:
+            .convertFromTrainCase, .convertFromDotCase, .convertFromTitleCase, .convertFromSentenceCase:
             false
         }
     }

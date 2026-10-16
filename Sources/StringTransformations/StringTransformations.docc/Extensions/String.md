@@ -16,3 +16,5 @@
 - ``kebabCased()``
 - ``trainCased()``
 - ``dotCased()``
+- ``titleCased()``
+- ``sentenceCased()``

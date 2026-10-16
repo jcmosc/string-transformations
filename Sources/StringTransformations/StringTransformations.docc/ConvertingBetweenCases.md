@@ -20,6 +20,8 @@ Each case has a method on `String` that returns a converted copy, in the same wa
 "XMLHttpRequest".kebabCased()       // "xml-http-request"
 "content_type".trainCased()         // "Content-Type"
 "serverPort".dotCased()             // "server.port"
+"maxRetryCount".titleCased()        // "Max Retry Count"
+"maxRetryCount".sentenceCased()     // "Max retry count"
 ```
 
 These methods use each transformer's default configuration.

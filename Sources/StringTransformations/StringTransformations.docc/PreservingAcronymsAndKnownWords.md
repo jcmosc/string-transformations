@@ -63,15 +63,22 @@ separator isn't kept together.
 
 ### Known words in the output
 
-Transformers that capitalize words, ``CamelCaseTransformer``, ``PascalCaseTransformer`` and
-``TrainCaseTransformer``, write any word that matches a known word with the known word's
-spelling. These matches ignore case, so they also apply to words that came from lowercase or
-uppercase input:
+Transformers that capitalize words, ``CamelCaseTransformer``, ``PascalCaseTransformer``,
+``TrainCaseTransformer`` and ``TitleCaseTransformer``, write any word that matches a known word
+with the known word's spelling. These matches ignore case, so they also apply to words that came
+from lowercase or uppercase input:
 
 ```swift
 "url_session".transformed(using: .pascalCase(knownWords: ["URL"]))      // "URLSession"
 "x-request-id".transformed(using: .trainCase(knownWords: ["ID"]))       // "X-Request-ID"
 "MY_URL".transformed(using: .camelCase(knownWords: ["URL"]))            // "myURL"
+```
+
+``SentenceCaseTransformer`` uses known spellings for every word, so acronyms keep their capitals
+in the middle of a sentence:
+
+```swift
+"request_id".transformed(using: .sentenceCase(knownWords: ["ID"]))      // "Request ID"
 ```
 
 The first word of a camel-case string is always lowercase, even when it's a known word:

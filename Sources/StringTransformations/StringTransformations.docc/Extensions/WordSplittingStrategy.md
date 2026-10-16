@@ -14,6 +14,11 @@
 - ``convertFromTrainCase``
 - ``convertFromDotCase``
 
+### Assuming a Space-Separated Case
+
+- ``convertFromTitleCase``
+- ``convertFromSentenceCase``
+
 ### Assuming a Case Without Separators
 
 - ``convertFromCamelCase``

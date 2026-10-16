@@ -36,3 +36,7 @@ transformations, see <doc:CreatingCustomTransformers>.
 - ``trainCase(wordSplittingStrategy:knownWords:)``
 - ``dotCase``
 - ``dotCase(wordSplittingStrategy:knownWords:)``
+- ``titleCase``
+- ``titleCase(wordSplittingStrategy:knownWords:)``
+- ``sentenceCase``
+- ``sentenceCase(wordSplittingStrategy:knownWords:)``

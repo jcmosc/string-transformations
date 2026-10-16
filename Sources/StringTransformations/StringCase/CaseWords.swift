@@ -169,6 +169,11 @@ struct KnownWords {
     func capitalized(_ word: Substring) -> String {
         spellings[word.lowercased()] ?? word.capitalizedWord()
     }
+
+    /// Returns the word lowercased, or with its known spelling if it's a known word, ignoring case.
+    func lowercased(_ word: Substring) -> String {
+        spellings[word.lowercased()] ?? word.lowercased()
+    }
 }
 
 extension Character {
