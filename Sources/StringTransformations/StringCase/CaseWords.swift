@@ -11,19 +11,20 @@ extension String {
 
     /// Splits the string into words for case conversion.
     ///
-    /// Words are separated by runs of separator characters (underscores, hyphens, periods and
-    /// whitespace), and then by case changes in the same way as
+    /// Words are separated by runs of the strategy's separator characters, and then, if the strategy
+    /// allows it, by case changes in the same way as
     /// `JSONEncoder.KeyEncodingStrategy.convertToSnakeCase`. Leading and trailing separators are
     /// not split, so that names such as `_private` keep their prefix.
-    func caseComponents() -> CaseComponents {
-        guard let first = firstIndex(where: { !$0.isWordSeparator }),
-            let last = lastIndex(where: { !$0.isWordSeparator })
+    func caseComponents(wordSplittingStrategy: WordSplittingStrategy) -> CaseComponents {
+        guard let first = firstIndex(where: { !wordSplittingStrategy.isSeparator($0) }),
+            let last = lastIndex(where: { !wordSplittingStrategy.isSeparator($0) })
         else {
             return CaseComponents(prefix: self[...], words: [], suffix: "")
         }
-        let words = self[first...last]
-            .split(whereSeparator: \.isWordSeparator)
-            .flatMap(Self.splitAtCaseChanges)
+        var words = self[first...last].split(whereSeparator: wordSplittingStrategy.isSeparator)
+        if wordSplittingStrategy.splitsAtCaseChanges {
+            words = words.flatMap(Self.splitAtCaseChanges)
+        }
         return CaseComponents(prefix: self[..<first], words: words, suffix: self[index(after: last)...])
     }
 
@@ -31,9 +32,10 @@ extension String {
     /// leading and trailing separators.
     func joinedCaseWords(
         separator: String,
+        wordSplittingStrategy: WordSplittingStrategy,
         _ transform: (_ offset: Int, _ word: Substring) -> String
     ) -> String {
-        let components = caseComponents()
+        let components = caseComponents(wordSplittingStrategy: wordSplittingStrategy)
         let words = components.words.enumerated().map { transform($0.offset, $0.element) }
         return components.prefix + words.joined(separator: separator) + components.suffix
     }
@@ -85,10 +87,6 @@ extension Substring {
 }
 
 extension Character {
-    fileprivate var isWordSeparator: Bool {
-        self == "_" || self == "-" || self == "." || isWhitespace
-    }
-
     // Like Foundation's `CharacterSet.uppercaseLetters`, these check the general category of the
     // base scalar, so combining marks don't affect the result and caseless characters, such as
     // digits, symbols and emoji, are neither uppercase nor lowercase.
