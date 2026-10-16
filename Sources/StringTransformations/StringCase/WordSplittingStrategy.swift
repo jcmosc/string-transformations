@@ -6,7 +6,7 @@
 /// case's boundaries, so words keep their original case and the separators of other cases are
 /// left alone:
 ///
-///     let transformer = SnakeCaseTransformer(strategy: .convertFromKebabCase)
+///     let transformer = SnakeCaseTransformer(wordSplittingStrategy: .convertFromKebabCase)
 ///     print(transformer.transform("McDonald-my_var"))
 ///     // Prints "mcdonald_my_var"
 public enum WordSplittingStrategy: Codable, Hashable, Sendable {

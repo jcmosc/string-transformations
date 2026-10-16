@@ -1,4 +1,13 @@
 /// A structure that transforms strings into their Pascal-case representations.
+///
+/// Pascal case joins capitalized words without separators:
+///
+///     let transformer = PascalCaseTransformer()
+///     print(transformer.transform("user_id"))
+///     // Prints "UserId"
+///
+/// Transformers split strings into words at separators and changes of case. To change how strings
+/// are split, set ``wordSplittingStrategy`` and ``knownWords``.
 public struct PascalCaseTransformer: StringTransformer {
     /// The strategy used to split strings into words.
     public var wordSplittingStrategy: WordSplittingStrategy
@@ -24,6 +33,10 @@ public struct PascalCaseTransformer: StringTransformer {
         self.knownWords = knownWords
     }
 
+    /// Returns the result of converting a string to Pascal case.
+    ///
+    /// - Parameter value: The string to convert.
+    /// - Returns: The Pascal case representation of `value`.
     public func transform(_ value: String) -> String {
         let knownWords = KnownWords(knownWords)
         return value.joinedCaseWords(

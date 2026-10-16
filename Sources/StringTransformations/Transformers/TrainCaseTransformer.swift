@@ -1,4 +1,13 @@
-/// A structure that transforms strings into their train-case representations.
+/// A structure that transforms strings into their Train-case representations.
+///
+/// Train case joins capitalized words with hyphens:
+///
+///     let transformer = TrainCaseTransformer()
+///     print(transformer.transform("content_type"))
+///     // Prints "Content-Type"
+///
+/// Transformers split strings into words at separators and changes of case. To change how strings
+/// are split, set ``wordSplittingStrategy`` and ``knownWords``.
 public struct TrainCaseTransformer: StringTransformer {
     /// The strategy used to split strings into words.
     public var wordSplittingStrategy: WordSplittingStrategy
@@ -11,7 +20,7 @@ public struct TrainCaseTransformer: StringTransformer {
     /// instead of being capitalized, so `"user_id"` becomes `"User-ID"` when `"ID"` is a known word.
     public var knownWords: Set<String>
 
-    /// Creates a train-case transformer.
+    /// Creates a Train-case transformer.
     ///
     /// - Parameters:
     ///   - wordSplittingStrategy: The strategy used to split strings into words.
@@ -24,6 +33,10 @@ public struct TrainCaseTransformer: StringTransformer {
         self.knownWords = knownWords
     }
 
+    /// Returns the result of converting a string to Train case.
+    ///
+    /// - Parameter value: The string to convert.
+    /// - Returns: The Train case representation of `value`.
     public func transform(_ value: String) -> String {
         let knownWords = KnownWords(knownWords)
         return value.joinedCaseWords(
@@ -37,10 +50,10 @@ public struct TrainCaseTransformer: StringTransformer {
 }
 
 extension StringTransformer where Self == TrainCaseTransformer {
-    /// A string transformer that converts strings to train-case representations.
+    /// A string transformer that converts strings to Train-case representations.
     public static var trainCase: TrainCaseTransformer { .init() }
 
-    /// A string transformer that converts strings to train-case representations, using the given
+    /// A string transformer that converts strings to Train-case representations, using the given
     /// strategy and known words to split them into words.
     public static func trainCase(
         wordSplittingStrategy: WordSplittingStrategy = .useDefaultBoundaries,
@@ -51,7 +64,7 @@ extension StringTransformer where Self == TrainCaseTransformer {
 }
 
 extension String {
-    /// Returns a train-case version of the string.
+    /// Returns a Train-case version of the string.
     ///
     /// Here's an example of transforming a string to train case.
     ///
@@ -59,7 +72,7 @@ extension String {
     ///     print(key.trainCased())
     ///     // Prints "My-Url"
     ///
-    /// - Returns: A train-case copy of the string.
+    /// - Returns: A Train-case copy of the string.
     public func trainCased() -> String {
         TrainCaseTransformer().transform(self)
     }

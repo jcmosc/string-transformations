@@ -1,4 +1,13 @@
 /// A structure that transforms strings into their kebab-case representations.
+///
+/// Kebab case joins lowercase words with hyphens:
+///
+///     let transformer = KebabCaseTransformer()
+///     print(transformer.transform("XMLHttpRequest"))
+///     // Prints "xml-http-request"
+///
+/// Transformers split strings into words at separators and changes of case. To change how strings
+/// are split, set ``wordSplittingStrategy`` and ``knownWords``.
 public struct KebabCaseTransformer: StringTransformer {
     /// The strategy used to split strings into words.
     public var wordSplittingStrategy: WordSplittingStrategy
@@ -22,6 +31,10 @@ public struct KebabCaseTransformer: StringTransformer {
         self.knownWords = knownWords
     }
 
+    /// Returns the result of converting a string to kebab case.
+    ///
+    /// - Parameter value: The string to convert.
+    /// - Returns: The kebab case representation of `value`.
     public func transform(_ value: String) -> String {
         let knownWords = KnownWords(knownWords)
         return value.joinedCaseWords(

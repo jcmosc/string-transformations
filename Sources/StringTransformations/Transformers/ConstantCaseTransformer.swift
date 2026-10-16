@@ -1,4 +1,13 @@
 /// A structure that transforms strings into their constant-case representations.
+///
+/// Constant case joins uppercase words with underscores:
+///
+///     let transformer = ConstantCaseTransformer()
+///     print(transformer.transform("maxRetryCount"))
+///     // Prints "MAX_RETRY_COUNT"
+///
+/// Transformers split strings into words at separators and changes of case. To change how strings
+/// are split, set ``wordSplittingStrategy`` and ``knownWords``.
 public struct ConstantCaseTransformer: StringTransformer {
     /// The strategy used to split strings into words.
     public var wordSplittingStrategy: WordSplittingStrategy
@@ -22,6 +31,10 @@ public struct ConstantCaseTransformer: StringTransformer {
         self.knownWords = knownWords
     }
 
+    /// Returns the result of converting a string to constant case.
+    ///
+    /// - Parameter value: The string to convert.
+    /// - Returns: The constant case representation of `value`.
     public func transform(_ value: String) -> String {
         let knownWords = KnownWords(knownWords)
         return value.joinedCaseWords(

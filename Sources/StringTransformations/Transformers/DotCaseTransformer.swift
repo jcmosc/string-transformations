@@ -1,4 +1,13 @@
 /// A structure that transforms strings into their dot-case representations.
+///
+/// Dot case joins lowercase words with periods:
+///
+///     let transformer = DotCaseTransformer()
+///     print(transformer.transform("serverPort"))
+///     // Prints "server.port"
+///
+/// Transformers split strings into words at separators and changes of case. To change how strings
+/// are split, set ``wordSplittingStrategy`` and ``knownWords``.
 public struct DotCaseTransformer: StringTransformer {
     /// The strategy used to split strings into words.
     public var wordSplittingStrategy: WordSplittingStrategy
@@ -22,6 +31,10 @@ public struct DotCaseTransformer: StringTransformer {
         self.knownWords = knownWords
     }
 
+    /// Returns the result of converting a string to dot case.
+    ///
+    /// - Parameter value: The string to convert.
+    /// - Returns: The dot case representation of `value`.
     public func transform(_ value: String) -> String {
         let knownWords = KnownWords(knownWords)
         return value.joinedCaseWords(
