@@ -14,8 +14,12 @@ extension String {
     /// Words are separated by runs of the strategy's separator characters, and then, if the strategy
     /// allows it, by case changes in the same way as
     /// `JSONEncoder.KeyEncodingStrategy.convertToSnakeCase`. Leading and trailing separators are
-    /// not split, so that names such as `_private` keep their prefix.
-    func caseComponents(wordSplittingStrategy: WordSplittingStrategy) -> CaseComponents {
+    /// not split, so that names such as `_private` keep their prefix. Known words are never split
+    /// at case changes.
+    func caseComponents(
+        wordSplittingStrategy: WordSplittingStrategy,
+        knownWords: KnownWords
+    ) -> CaseComponents {
         guard let first = firstIndex(where: { !wordSplittingStrategy.isSeparator($0) }),
             let last = lastIndex(where: { !wordSplittingStrategy.isSeparator($0) })
         else {
@@ -23,7 +27,7 @@ extension String {
         }
         var words = self[first...last].split(whereSeparator: wordSplittingStrategy.isSeparator)
         if wordSplittingStrategy.splitsAtCaseChanges {
-            words = words.flatMap(Self.splitAtCaseChanges)
+            words = words.flatMap { Self.splitAtCaseChanges($0, knownWords: knownWords) }
         }
         return CaseComponents(prefix: self[..<first], words: words, suffix: self[index(after: last)...])
     }
@@ -33,11 +37,40 @@ extension String {
     func joinedCaseWords(
         separator: String,
         wordSplittingStrategy: WordSplittingStrategy,
+        knownWords: KnownWords,
         _ transform: (_ offset: Int, _ word: Substring) -> String
     ) -> String {
-        let components = caseComponents(wordSplittingStrategy: wordSplittingStrategy)
+        let components = caseComponents(wordSplittingStrategy: wordSplittingStrategy, knownWords: knownWords)
         let words = components.words.enumerated().map { transform($0.offset, $0.element) }
         return components.prefix + words.joined(separator: separator) + components.suffix
+    }
+
+    /// Splits a word at case changes, keeping known words together and splitting the text between
+    /// them with `splitAtCaseChanges(_:)`.
+    private static func splitAtCaseChanges(_ word: Substring, knownWords: KnownWords) -> [Substring] {
+        guard !knownWords.isEmpty else {
+            return splitAtCaseChanges(word)
+        }
+        var words: [Substring] = []
+        // The start of the text that isn't part of a known word, which is always a word start.
+        var gapStart = word.startIndex
+        var i = word.startIndex
+        while i < word.endIndex {
+            guard let end = knownWords.match(in: word, at: i, isWordStart: i == gapStart) else {
+                i = word.index(after: i)
+                continue
+            }
+            if gapStart < i {
+                words += splitAtCaseChanges(word[gapStart..<i])
+            }
+            words.append(word[i..<end])
+            gapStart = end
+            i = end
+        }
+        if gapStart < word.endIndex {
+            words += splitAtCaseChanges(word[gapStart...])
+        }
+        return words
     }
 
     /// Splits a word at case changes, matching `JSONEncoder.KeyEncodingStrategy.convertToSnakeCase`.
@@ -83,6 +116,58 @@ extension Substring {
             return ""
         }
         return first.properties.titlecaseMapping + String(unicodeScalars.dropFirst()).lowercased()
+    }
+}
+
+/// Words with a fixed spelling, such as acronyms, that are kept together when splitting and keep
+/// their spelling when capitalized.
+struct KnownWords {
+    /// The known words, longest first so that the longest match wins.
+    private let words: [String]
+
+    /// The spelling of each known word, keyed by its lowercased form.
+    private let spellings: [String: String]
+
+    init(_ words: Set<String>) {
+        self.words = words.filter { !$0.isEmpty }.sorted {
+            $0.count != $1.count ? $0.count > $1.count : $0 < $1
+        }
+        // Sorting makes the spelling chosen for words that differ only by case deterministic.
+        self.spellings = Dictionary(self.words.map { ($0.lowercased(), $0) }) { first, _ in first }
+    }
+
+    var isEmpty: Bool {
+        words.isEmpty
+    }
+
+    /// Returns the end of the known word that appears at the given index, if there is one.
+    ///
+    /// A known word must appear with its exact spelling, and must not be followed by a lowercase
+    /// letter, which would continue the word. Unless the index is the start of a word, the known
+    /// word must also not continue a run of letters of the same case as its first letter, so that
+    /// `"URL"` isn't found in `"CURL"`.
+    func match(in string: Substring, at index: Substring.Index, isWordStart: Bool) -> Substring.Index? {
+        for word in words where string[index...].hasPrefix(word) {
+            let end = string.index(index, offsetBy: word.count)
+            if end < string.endIndex && string[end].startsLowercase {
+                continue
+            }
+            if !isWordStart, let first = word.first {
+                let previous = string[string.index(before: index)]
+                if (first.startsUppercase && previous.startsUppercase)
+                    || (first.startsLowercase && previous.startsLowercase)
+                {
+                    continue
+                }
+            }
+            return end
+        }
+        return nil
+    }
+
+    /// Returns the word capitalized, or with its known spelling if it's a known word, ignoring case.
+    func capitalized(_ word: Substring) -> String {
+        spellings[word.lowercased()] ?? word.capitalizedWord()
     }
 }
 

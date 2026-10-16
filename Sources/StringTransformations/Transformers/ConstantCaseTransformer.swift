@@ -3,15 +3,32 @@ public struct ConstantCaseTransformer: StringTransformer {
     /// The strategy used to split strings into words.
     public var wordSplittingStrategy: WordSplittingStrategy
 
+    /// Words with a fixed spelling, such as acronyms, that are never split at case changes.
+    ///
+    /// Where a known word appears in a string with exactly this spelling, it's kept as a single
+    /// word, so `"myURLs"` splits into `"my"` and `"URLs"` when `"URLs"` is a known word.
+    public var knownWords: Set<String>
+
     /// Creates a constant-case transformer.
     ///
-    /// - Parameter wordSplittingStrategy: The strategy used to split strings into words.
-    public init(wordSplittingStrategy: WordSplittingStrategy = .useDefaultBoundaries) {
+    /// - Parameters:
+    ///   - wordSplittingStrategy: The strategy used to split strings into words.
+    ///   - knownWords: Words with a fixed spelling, such as acronyms.
+    public init(
+        wordSplittingStrategy: WordSplittingStrategy = .useDefaultBoundaries,
+        knownWords: Set<String> = []
+    ) {
         self.wordSplittingStrategy = wordSplittingStrategy
+        self.knownWords = knownWords
     }
 
     public func transform(_ value: String) -> String {
-        value.joinedCaseWords(separator: "_", wordSplittingStrategy: wordSplittingStrategy) { _, word in
+        let knownWords = KnownWords(knownWords)
+        return value.joinedCaseWords(
+            separator: "_",
+            wordSplittingStrategy: wordSplittingStrategy,
+            knownWords: knownWords
+        ) { _, word in
             word.uppercased()
         }
     }
@@ -22,9 +39,12 @@ extension StringTransformer where Self == ConstantCaseTransformer {
     public static var constantCase: ConstantCaseTransformer { .init() }
 
     /// A string transformer that converts strings to constant-case representations, using the given
-    /// strategy to split them into words.
-    public static func constantCase(wordSplittingStrategy: WordSplittingStrategy) -> ConstantCaseTransformer {
-        .init(wordSplittingStrategy: wordSplittingStrategy)
+    /// strategy and known words to split them into words.
+    public static func constantCase(
+        wordSplittingStrategy: WordSplittingStrategy = .useDefaultBoundaries,
+        knownWords: Set<String> = []
+    ) -> ConstantCaseTransformer {
+        .init(wordSplittingStrategy: wordSplittingStrategy, knownWords: knownWords)
     }
 }
 
